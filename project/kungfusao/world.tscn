@@ -1,47 +1,55 @@
-[gd_scene load_steps=6 format=3 uid="uid://vfpok7laavg0"]
+[gd_scene load_steps=8 format=3 uid="uid://uqrqng3qanfq"]
 
-[ext_resource type="PackedScene" uid="uid://la62dvi6bfp" path="res://scenes/stages/Stage.tscn" id="1_f3sb7"]
-[ext_resource type="Script" uid="uid://blkca71k81na8" path="res://world.gd" id="1_tlwt5"]
-[ext_resource type="PackedScene" uid="uid://4hujje665twy" path="res://scenes/characters/player.tscn" id="2_fj7yv"]
-[ext_resource type="PackedScene" uid="uid://d0w70uo78mj7v" path="res://scenes/props/barrel.tscn" id="4_aqk2v"]
+[ext_resource type="Script" uid="uid://f4ts361h7sng" path="res://world.gd" id="1_58n65"]
+[ext_resource type="PackedScene" uid="uid://cvr6opvp31hp6" path="res://scenes/characters/player.tscn" id="2_fso2d"]
+[ext_resource type="PackedScene" uid="uid://ch23ufr1x5ey4" path="res://scenes/ui/ui.tscn" id="2_lmtw4"]
+[ext_resource type="Script" uid="uid://bt73cxtaxjvls" path="res://scenes/stage/actors_container.gd" id="3_1ub62"]
+[ext_resource type="Script" uid="uid://ddtt7nhyefeav" path="res://scenes/stage/camera.gd" id="4_tj0xi"]
+[ext_resource type="PackedScene" uid="uid://dwkq72aytt2bu" path="res://scenes/stage/stage_01_dojo.tscn" id="5_xnh8a"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_tlwt5"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ktcqf"]
 size = Vector2(6, 64)
 
 [node name="World" type="Node2D"]
-script = ExtResource("1_tlwt5")
+script = ExtResource("1_58n65")
 
-[node name="Stage" parent="." instance=ExtResource("1_f3sb7")]
+[node name="UI" parent="." instance=ExtResource("2_lmtw4")]
+
+[node name="Stage-01-Dojo" parent="." instance=ExtResource("5_xnh8a")]
 
 [node name="Camera" type="Camera2D" parent="."]
 position = Vector2(50, 32)
+position_smoothing_enabled = true
+position_smoothing_speed = 3.0
+script = ExtResource("4_tj0xi")
+duration_shake = 50
 
 [node name="InvisibleWalls" type="Node2D" parent="Camera"]
 position = Vector2(-50, -32)
 
-[node name="LeftWall" type="Node2D" parent="Camera/InvisibleWalls"]
+[node name="LeftWall" type="AnimatableBody2D" parent="Camera/InvisibleWalls"]
+collision_layer = 128
+collision_mask = 0
+sync_to_physics = false
 
-[node name="StaticBody2D" type="StaticBody2D" parent="Camera/InvisibleWalls/LeftWall"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Camera/InvisibleWalls/LeftWall"]
 position = Vector2(0, 32)
+shape = SubResource("RectangleShape2D_ktcqf")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Camera/InvisibleWalls/LeftWall/StaticBody2D"]
-position = Vector2(-3, 0)
-shape = SubResource("RectangleShape2D_tlwt5")
+[node name="RightWall" type="AnimatableBody2D" parent="Camera/InvisibleWalls"]
+position = Vector2(100, 0)
+collision_layer = 128
+collision_mask = 0
+sync_to_physics = false
 
-[node name="RightWall" type="Node2D" parent="Camera/InvisibleWalls"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Camera/InvisibleWalls/RightWall"]
+position = Vector2(0, 32)
+shape = SubResource("RectangleShape2D_ktcqf")
 
-[node name="StaticBody2D" type="StaticBody2D" parent="Camera/InvisibleWalls/RightWall"]
-position = Vector2(100, 32)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Camera/InvisibleWalls/RightWall/StaticBody2D"]
-shape = SubResource("RectangleShape2D_tlwt5")
-
-[node name="ActorsContainer" type="Node2D" parent="."]
+[node name="ActorsContainer" type="Node2D" parent="." node_paths=PackedStringArray("player")]
 y_sort_enabled = true
+script = ExtResource("3_1ub62")
+player = NodePath("Player")
 
-[node name="Player" parent="ActorsContainer" instance=ExtResource("2_fj7yv")]
-position = Vector2(33, 39)
-speed = 50.0
-
-[node name="Barrel" parent="ActorsContainer" instance=ExtResource("4_aqk2v")]
-position = Vector2(73, 46)
+[node name="Player" parent="ActorsContainer" instance=ExtResource("2_fso2d")]
+position = Vector2(36, 46)
